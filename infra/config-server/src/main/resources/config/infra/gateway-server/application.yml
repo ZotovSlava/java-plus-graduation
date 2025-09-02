@@ -12,13 +12,10 @@ spring:
         - id: main_service_route
           uri: lb://main-service
           predicates:
-            - Path=/main-service/**
-          filters:
-            - PrefixPath=/api/v1
+            - Path=/{segment:^(users|admin|events|categories|compilations)}/**
 
         - id: stats_server_route
           uri: lb://stats-server
           predicates:
-            - Path=/stats-server/**
-          filters:
-            - PrefixPath=/api/v1
+            - Path=/hit
+            - Path=/stats
