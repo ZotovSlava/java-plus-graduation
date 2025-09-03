@@ -12,10 +12,17 @@ spring:
         - id: main_service_route
           uri: lb://main-service
           predicates:
-            - Path=/{segment:^(users|admin|events|categories|compilations)}/**
+            - Path=/users/**,/admin/**,/events/**,/categories/**,/compilations/**
 
         - id: stats_server_route
           uri: lb://stats-server
           predicates:
             - Path=/hit
             - Path=/stats
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.loadbalancer: DEBUG
+    reactor.netty: DEBUG
+    org.springframework.cloud.client.discovery: DEBUG
