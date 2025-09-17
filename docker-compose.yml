@@ -4,47 +4,6 @@ networks:
   backend-net:
 
 services:
-  # Discovery Server (Eureka)
-  discovery-server:
-    build: infra/discovery-server
-    container_name: discovery-server
-    ports:
-      - "8761:8761"
-    networks:
-      - backend-net
-
-  # Config Server
-  config-server:
-    build: infra/config-server
-    container_name: config-server
-    environment:
-      - SPRING_PROFILES_ACTIVE=native
-    ports:
-      - "8888:8888"
-    depends_on:
-      - discovery-server
-    networks:
-      - backend-net
-
-  # Gateway
-  gateway:
-    build: infra/gateway-server
-    container_name: gateway-server
-    ports:
-      - "8080:8080"
-    depends_on:
-      - discovery-server
-      - config-server
-      - category-service
-      - event-service
-      - user-service
-      - request-service
-      - compilation
-      - comment-service
-      - stats-server
-    networks:
-      - backend-net
-
   # Category Service + DB
   category-db:
     image: postgres:15
@@ -55,22 +14,6 @@ services:
       POSTGRES_DB: category
     ports:
       - "5433:5432"
-    networks:
-      - backend-net
-
-  category:
-    build: core/category-service
-    container_name: category-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://category-db:5432/category
-      SPRING_DATASOURCE_USERNAME: category
-      SPRING_DATASOURCE_PASSWORD: category123
-      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-    depends_on:
-      - category-db
-      - config-server
-      - discovery-server
     networks:
       - backend-net
 
@@ -87,22 +30,6 @@ services:
     networks:
       - backend-net
 
-  event:
-    build: core/event-service
-    container_name: event-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://event-db:5432/event
-      SPRING_DATASOURCE_USERNAME: event
-      SPRING_DATASOURCE_PASSWORD: event123
-      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-    depends_on:
-      - event-db
-      - config-server
-      - discovery-server
-    networks:
-      - backend-net
-
   # User Service + DB
   user-db:
     image: postgres:15
@@ -115,23 +42,7 @@ services:
       - "5435:5432"
     networks:
       - backend-net
-
-  user:
-    build: core/user-service
-    container_name: user-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/user
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: user123
-      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-    depends_on:
-      - user-db
-      - config-server
-      - discovery-server
-    networks:
-      - backend-net
-
+      -
   # Request Service + DB
   request-db:
     image: postgres:15
@@ -142,22 +53,6 @@ services:
       POSTGRES_DB: request
     ports:
       - "5436:5432"
-    networks:
-      - backend-net
-
-  request:
-    build: core/request-service
-    container_name: request-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://request-db:5432/request
-      SPRING_DATASOURCE_USERNAME: request
-      SPRING_DATASOURCE_PASSWORD: request123
-      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-    depends_on:
-      - request-db
-      - config-server
-      - discovery-server
     networks:
       - backend-net
 
@@ -174,22 +69,6 @@ services:
     networks:
       - backend-net
 
-  compilation:
-    build: core/compilation-service
-    container_name: compilation-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://compilation-db:5432/compilation
-      SPRING_DATASOURCE_USERNAME: compilation
-      SPRING_DATASOURCE_PASSWORD: compilation123
-      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-    depends_on:
-      - compilation-db
-      - config-server
-      - discovery-server
-    networks:
-      - backend-net
-
   # Comment Service + DB
   comment-db:
     image: postgres:15
@@ -200,22 +79,6 @@ services:
       POSTGRES_DB: comment
     ports:
       - "5438:5432"
-    networks:
-      - backend-net
-
-  comment:
-    build: core/comment-service
-    container_name: comment-service
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://comment-db:5432/comment
-      SPRING_DATASOURCE_USERNAME: comment
-      SPRING_DATASOURCE_PASSWORD: comment123
-      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-    depends_on:
-      - comment-db
-      - config-server
-      - discovery-server
     networks:
       - backend-net
 
@@ -232,18 +95,3 @@ services:
     networks:
       - backend-net
 
-  stats-server:
-    build: stats/stats-server
-    container_name: stats-server
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:5432/stats
-      SPRING_DATASOURCE_USERNAME: stats
-      SPRING_DATASOURCE_PASSWORD: stats123
-      SPRING_CLOUD_CONFIG_URI: http://config-server:8888
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://discovery-server:8761/eureka/
-    depends_on:
-      - stats-db
-      - config-server
-      - discovery-server
-    networks:
-      - backend-net
