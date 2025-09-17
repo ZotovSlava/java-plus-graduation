@@ -118,7 +118,7 @@ services:
 
   user:
     build: core/user
-    container_name: user
+    container_name: user-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/user
       SPRING_DATASOURCE_USERNAME: user
