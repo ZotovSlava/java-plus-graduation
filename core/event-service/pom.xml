@@ -100,7 +100,6 @@
     </dependencies>
 
     <build>
-        <finalName>event-service</finalName>
         <plugins>
             <plugin>
                 <groupId>com.mysema.maven</groupId>
