@@ -1,12 +1,7 @@
-version: "3.9"
-
-networks:
-  backend-net:
-
 services:
   # Category Service + DB
   category-db:
-    image: postgres:15
+    image: postgres:16.1
     container_name: category-db
     environment:
       POSTGRES_USER: category
@@ -14,12 +9,15 @@ services:
       POSTGRES_DB: category
     ports:
       - "5433:5432"
-    networks:
-      - backend-net
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
   # Event Service + DB
   event-db:
-    image: postgres:15
+    image: postgres:16.1
     container_name: event-db
     environment:
       POSTGRES_USER: event
@@ -27,12 +25,15 @@ services:
       POSTGRES_DB: event
     ports:
       - "5434:5432"
-    networks:
-      - backend-net
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
   # User Service + DB
   user-db:
-    image: postgres:15
+    image: postgres:16.1
     container_name: user-db
     environment:
       POSTGRES_USER: user
@@ -40,12 +41,14 @@ services:
       POSTGRES_DB: user
     ports:
       - "5435:5432"
-    networks:
-      - backend-net
-      -
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
   # Request Service + DB
   request-db:
-    image: postgres:15
+    image: postgres:16.1
     container_name: request-db
     environment:
       POSTGRES_USER: request
@@ -53,12 +56,15 @@ services:
       POSTGRES_DB: request
     ports:
       - "5436:5432"
-    networks:
-      - backend-net
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
   # Compilation Service + DB
   compilation-db:
-    image: postgres:15
+    image: postgres:16.1
     container_name: compilation-db
     environment:
       POSTGRES_USER: compilation
@@ -66,12 +72,15 @@ services:
       POSTGRES_DB: compilation
     ports:
       - "5437:5432"
-    networks:
-      - backend-net
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
   # Comment Service + DB
   comment-db:
-    image: postgres:15
+    image: postgres:16.1
     container_name: comment-db
     environment:
       POSTGRES_USER: comment
@@ -79,12 +88,15 @@ services:
       POSTGRES_DB: comment
     ports:
       - "5438:5432"
-    networks:
-      - backend-net
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
   # Stats Server + DB
   stats-db:
-    image: postgres:15
+    image: postgres:16.1
     container_name: stats-db
     environment:
       POSTGRES_USER: stats
@@ -92,6 +104,9 @@ services:
       POSTGRES_DB: stats
     ports:
       - "5439:5432"
-    networks:
-      - backend-net
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
