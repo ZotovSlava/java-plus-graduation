@@ -99,6 +99,7 @@
     </dependencies>
 
     <build>
+        <finalName>request-service</finalName>
         <plugins>
             <plugin>
                 <groupId>com.mysema.maven</groupId>
