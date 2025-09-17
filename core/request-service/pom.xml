@@ -9,14 +9,13 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>category</artifactId>
+    <artifactId>request-service</artifactId>
 
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
         <maven.compiler.target>22</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
         <dependency>
             <groupId>ru.practicum</groupId>
@@ -100,7 +99,7 @@
     </dependencies>
 
     <build>
-        <finalName>category-service</finalName>
+        <finalName>request-service</finalName>
         <plugins>
             <plugin>
                 <groupId>com.mysema.maven</groupId>
@@ -159,5 +158,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

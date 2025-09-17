@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>compilation</artifactId>
+    <artifactId>event-service</artifactId>
 
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
@@ -100,7 +100,7 @@
     </dependencies>
 
     <build>
-        <finalName>compilation-service</finalName>
+        <finalName>event-service</finalName>
         <plugins>
             <plugin>
                 <groupId>com.mysema.maven</groupId>
@@ -159,4 +159,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

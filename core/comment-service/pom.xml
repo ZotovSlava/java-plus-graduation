@@ -9,7 +9,7 @@
         <version>0.0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>event</artifactId>
+    <artifactId>comment-service</artifactId>
 
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
@@ -100,7 +100,7 @@
     </dependencies>
 
     <build>
-        <finalName>event-service</finalName>
+        <finalName>comment-service</finalName>
         <plugins>
             <plugin>
                 <groupId>com.mysema.maven</groupId>
@@ -159,5 +159,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

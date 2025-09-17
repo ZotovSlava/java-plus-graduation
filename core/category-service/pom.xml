@@ -5,12 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ru.practicum</groupId>
-        <artifactId>explore-with-me</artifactId>
+        <artifactId>core</artifactId>
         <version>0.0.1-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>user</artifactId>
+    <artifactId>category-service</artifactId>
 
     <properties>
         <maven.compiler.source>22</maven.compiler.source>
@@ -101,7 +100,7 @@
     </dependencies>
 
     <build>
-        <finalName>user-service</finalName>
+        <finalName>category-service</finalName>
         <plugins>
             <plugin>
                 <groupId>com.mysema.maven</groupId>
@@ -139,7 +138,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -161,4 +159,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>
