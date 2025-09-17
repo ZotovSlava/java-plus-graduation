@@ -35,12 +35,12 @@ services:
     depends_on:
       - discovery-server
       - config-server
-      - category
-      - event
+      - category-service
+      - event-service
       - user-service
-      - request
+      - request-service
       - compilation
-      - comment
+      - comment-service
       - stats-server
     networks:
       - backend-net
@@ -59,8 +59,8 @@ services:
       - backend-net
 
   category:
-    build: core/category
-    container_name: category
+    build: core/category-service
+    container_name: category-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://category-db:5432/category
       SPRING_DATASOURCE_USERNAME: category
@@ -88,8 +88,8 @@ services:
       - backend-net
 
   event:
-    build: core/event
-    container_name: event
+    build: core/event-service
+    container_name: event-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://event-db:5432/event
       SPRING_DATASOURCE_USERNAME: event
@@ -117,7 +117,7 @@ services:
       - backend-net
 
   user:
-    build: core/user
+    build: core/user-service
     container_name: user-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://user-db:5432/user
@@ -146,8 +146,8 @@ services:
       - backend-net
 
   request:
-    build: core/request
-    container_name: request
+    build: core/request-service
+    container_name: request-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://request-db:5432/request
       SPRING_DATASOURCE_USERNAME: request
@@ -175,8 +175,8 @@ services:
       - backend-net
 
   compilation:
-    build: core/compilation
-    container_name: compilation
+    build: core/compilation-service
+    container_name: compilation-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://compilation-db:5432/compilation
       SPRING_DATASOURCE_USERNAME: compilation
@@ -204,8 +204,8 @@ services:
       - backend-net
 
   comment:
-    build: core/comment
-    container_name: comment
+    build: core/comment-service
+    container_name: comment-service
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://comment-db:5432/comment
       SPRING_DATASOURCE_USERNAME: comment
