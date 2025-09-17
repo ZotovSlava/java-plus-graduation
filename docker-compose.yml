@@ -37,7 +37,7 @@ services:
       - config-server
       - category
       - event
-      - user
+      - user-service
       - request
       - compilation
       - comment
