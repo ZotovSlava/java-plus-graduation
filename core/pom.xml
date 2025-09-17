@@ -17,6 +17,7 @@
         <module>comment-service</module>
         <module>compilation-service</module>
         <module>request-service</module>
+        <module>user-service</module>
     </modules>
 
     <artifactId>core</artifactId>
