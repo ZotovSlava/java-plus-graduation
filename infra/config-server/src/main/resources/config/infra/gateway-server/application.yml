@@ -1,15 +1,86 @@
-server:
-  port: 8080
-
 spring:
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-
       routes:
-        - id: main_service_route
-          uri: lb://main-service
+
+        # User service (Admin)
+        - id: user_admin_route
+          uri: lb://user
           predicates:
-            - Path=/users/**,/admin/**,/events/**,/categories/**,/compilations/**
+            - Path=/admin/users/**
+
+        # Category service
+        # Admin categories
+        - id: category_admin_route
+          uri: lb://category
+          predicates:
+            - Path=/admin/categories/**
+
+        # Public categories
+        - id: category_public_route
+          uri: lb://category
+          predicates:
+            - Path=/categories/**
+
+        # Comment service
+        # Admin comments
+        - id: comment_admin_route
+          uri: lb://comment
+          predicates:
+            - Path=/admin/comments/**
+
+        # Public comments
+        - id: comment_public_route
+          uri: lb://comment
+          predicates:
+            - Path=/comments/**
+
+        # Private comments (user-specific)
+        - id: comment_private_route
+          uri: lb://comment
+          predicates:
+            - Path=/users/*/events/*/comments/**
+
+        # Compilation service
+        - id: compilation_admin_route
+          uri: lb://compilation
+          predicates:
+            - Path=/admin/compilations/**
+
+        - id: compilation_public_route
+          uri: lb://compilation
+          predicates:
+            - Path=/compilations/**
+
+        # Event service
+        - id: event_admin_route
+          uri: lb://event
+          predicates:
+            - Path=/admin/events/**
+
+        - id: event_public_route
+          uri: lb://event
+          predicates:
+            - Path=/events/**
+
+        - id: event_private_route
+          uri: lb://event
+          predicates:
+            - Path=/users/*/events/**
+
+        - id: event_request_route
+          uri: lb://event
+          predicates:
+            - Path=/users/*/events/*/requests/**
+
+        # Request service (user-specific)
+        - id: request_user_route
+          uri: lb://request
+          predicates:
+            - Path=/users/**
+
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+    org.springframework.cloud.client.loadbalancer: DEBUG
+    org.springframework.web.reactive: DEBUG
