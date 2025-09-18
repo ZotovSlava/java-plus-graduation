@@ -10,7 +10,6 @@
     </parent>
 
     <modules>
-        <module>main-service</module>
         <module>interaction-api</module>
         <module>category-service</module>
         <module>event-service</module>
