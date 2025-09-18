@@ -8,7 +8,7 @@ import ru.practicum.dto.request.RequestStatus;
 import java.util.List;
 import java.util.Set;
 
-@FeignClient(name = "request")
+@FeignClient(name = "request-service")
 public interface RequestClient {
 
     @PostMapping("/users/{userId}/requests")

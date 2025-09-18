@@ -9,7 +9,7 @@ import ru.practicum.dto.comment.CommentDtoResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@FeignClient(name = "comment")
+@FeignClient(name = "comment-service")
 public interface CommentClient {
     @GetMapping("/comments/{commentId}")
     CommentDtoResponse findCommentById(@PathVariable("commentId") Long commentId);

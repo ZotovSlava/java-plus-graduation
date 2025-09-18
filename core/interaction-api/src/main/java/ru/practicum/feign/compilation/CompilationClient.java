@@ -8,7 +8,7 @@ import ru.practicum.dto.compilation.CompilationUpdateDto;
 
 import java.util.List;
 
-@FeignClient(name = "compilation")
+@FeignClient(name = "compilation-service")
 public interface CompilationClient {
     @GetMapping("/compilations")
     List<CompilationRequestDto> get(

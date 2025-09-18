@@ -343,12 +343,12 @@ public class EventServiceImpl implements EventService {
             if (updateDto.getStatus().equals(RequestStatus.CONFIRMED) && counter < count) {
                 counter++;
                 requestClient.updateState(userId, request.getId(), RequestStatus.CONFIRMED);
-
+                request.setStatus(RequestStatus.CONFIRMED);
                 confirmedRequests.add(request);
             } else {
                 //counter++;
                 requestClient.updateState(userId, request.getId(), RequestStatus.REJECTED);
-
+                request.setStatus(RequestStatus.REJECTED);
                 rejectedRequests.add(request);
             }
         }

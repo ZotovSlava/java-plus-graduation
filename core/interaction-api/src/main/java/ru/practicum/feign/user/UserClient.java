@@ -7,7 +7,7 @@ import ru.practicum.dto.user.UserRequestDto;
 
 import java.util.List;
 
-@FeignClient(name = "user", path = "/admin/users")
+@FeignClient(name = "user-service", path = "/admin/users")
 public interface UserClient {
     @PostMapping
     UserRequestDto create(@RequestBody UserCreateDto userCreateDto);

@@ -4,7 +4,7 @@ server:
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/compilation
+    url: jdbc:postgresql://localhost:5437/compilation
     username: compilation
     password: compilation123
 

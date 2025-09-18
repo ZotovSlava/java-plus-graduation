@@ -8,7 +8,7 @@ import ru.practicum.dto.category.CategoryRequestDto;
 import java.util.List;
 
 
-@FeignClient(name = "category")
+@FeignClient(name = "category-service")
 public interface CategoryClient {
     @GetMapping("/categories")
     List<CategoryRequestDto> get(

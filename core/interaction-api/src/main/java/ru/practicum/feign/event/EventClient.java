@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
-@FeignClient(name = "event")
+@FeignClient(name = "event-service")
 public interface EventClient {
     @GetMapping("/events")
     List<EventShortDto> get(
