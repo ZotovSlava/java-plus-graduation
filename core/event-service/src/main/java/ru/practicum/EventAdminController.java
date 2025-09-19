@@ -11,7 +11,6 @@ import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.dto.event.EventState;
 import ru.practicum.dto.event.EventUpdateAdminDto;
 import ru.practicum.dto.event.SimpleEventDto;
-import ru.practicum.dto.user.UserRequestDto;
 import ru.practicum.model.AdminEventParams;
 import ru.practicum.service.EventService;
 
@@ -40,7 +39,7 @@ public class EventAdminController {
 
     @PostMapping("/admin/events/{id}/confirmedRequest")
     public ResponseEntity<EventFullDto> updateConfirmedRequest(@RequestBody EventUpdateAdminDto eventUpdateDto,
-                                        @PathVariable("id") Long eventId){
+                                                               @PathVariable("id") Long eventId) {
 
         EventFullDto event = eventService.updateConfirmedRequest(eventUpdateDto, eventId);
 
@@ -85,12 +84,12 @@ public class EventAdminController {
     }
 
     @GetMapping("/admin/events/{eventId}")
-    public SimpleEventDto getById(@PathVariable Long eventId){
+    public SimpleEventDto getById(@PathVariable Long eventId) {
         return eventService.getByIdAdmin(eventId);
     }
 
     @GetMapping("/admin/events/by-ids")
-    public List<EventFullDto> getAllByEventsId(@RequestParam List<Long> ids){
+    public List<EventFullDto> getAllByEventsId(@RequestParam List<Long> ids) {
         return eventService.getAllByEventsId(ids);
     }
 }

@@ -15,5 +15,4 @@ public interface CategoryService {
     List<CategoryRequestDto> get(int from, int size);
 
     CategoryRequestDto getById(Long catId);
-
 }

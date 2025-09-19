@@ -9,7 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.dto.event.*;
 import ru.practicum.dto.request.RequestDto;
-import ru.practicum.dto.request.RequestEventDto;
 import ru.practicum.model.PrivateEventParams;
 import ru.practicum.service.EventService;
 
@@ -79,7 +78,7 @@ public class EventPrivateController {
 
     @GetMapping("/{userId}/events/{eventId}/requests")
     public ResponseEntity<List<RequestDto>> getAllRequests(@PathVariable("userId") Long userId,
-                                                                @PathVariable("eventId") Long eventId) {
+                                                           @PathVariable("eventId") Long eventId) {
         log.info("--> GET запрос /users/{}/events/{}/requests", userId, eventId);
         List<RequestDto> requests = eventService.getRequestsByIdPrivate(userId, eventId);
         log.info("<-- GET запрос /users/{}/events/{}/requests вернул ответ: {}", userId, eventId, requests);

@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CategoryCreateDto {
     @NotBlank(message = "Name can not be blank")
-    @Size(max = 50, message = "Name length must be between 0 and 50 characters")                                         // добавить, что длина от 1 до 50
+    @Size(max = 50, message = "Name length must be between 0 and 50 characters")
     private String name;
 }

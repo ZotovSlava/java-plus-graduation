@@ -7,5 +7,4 @@ public class PrivateEventParams {
     private Long userId;
     private Integer from;
     private Integer size;
-
 }

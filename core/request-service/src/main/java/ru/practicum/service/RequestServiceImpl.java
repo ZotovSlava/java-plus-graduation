@@ -10,7 +10,6 @@ import ru.practicum.dto.request.RequestStatus;
 import ru.practicum.dto.user.UserRequestDto;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.RequestNotFoundException;
-import ru.practicum.feign.event.EventAdminClient;
 import ru.practicum.feign.event.EventClient;
 import ru.practicum.feign.user.UserClient;
 import ru.practicum.mapper.EventUpdateMapper;
@@ -38,8 +37,6 @@ public class RequestServiceImpl implements RequestService {
 
         SimpleEventDto event = eventAdminClient.getById(eventId);
 
-        log.info("------------------------------------------------------- {}", event.toString());
-
         if (user.getId().equals(event.getInitiatorId())) {
             throw new ConflictException("You cannot register for your own event.");
         }
@@ -52,7 +49,7 @@ public class RequestServiceImpl implements RequestService {
             throw new ConflictException("All spots are taken, registration is not possible.");
         }
 
-        if(requestRepository.findByEventIdAndRequesterId(eventId, userId).isPresent()){
+        if (requestRepository.findByEventIdAndRequesterId(eventId, userId).isPresent()) {
             throw new ConflictException("Вы уже оставили заявку на участие.");
         }
 

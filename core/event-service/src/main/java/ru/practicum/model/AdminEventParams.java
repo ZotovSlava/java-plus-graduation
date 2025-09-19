@@ -15,5 +15,4 @@ public class AdminEventParams {
     private LocalDateTime rangeEnd;
     private Integer from;
     private Integer size;
-
 }

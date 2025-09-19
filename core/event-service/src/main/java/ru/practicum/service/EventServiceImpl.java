@@ -66,7 +66,6 @@ public class EventServiceImpl implements EventService {
 
         return foundEvents.stream()
                 .map(c -> {
-                    log.info("Fetching category with id={} 🙂", c.getCategoryId());
                     CategoryRequestDto categoryRequestDto = categoryClient.getById(c.getCategoryId());
                     UserRequestDto userRequestDto = userClient.getById(c.getInitiatorId());
                     return EventMapper.toEventFullDto(c, categoryRequestDto, userRequestDto);
@@ -182,16 +181,13 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EventNotFoundException(eventId));
 
-        // Получаем текущую категорию
         CategoryRequestDto category = categoryClient.getById(event.getCategoryId());
 
-        // Если пришла новая категория, обновляем
         if (eventDto.getCategory() != null && !eventDto.getCategory().equals(event.getCategoryId())) {
             category = categoryClient.getById(eventDto.getCategory());
             event.setCategoryId(eventDto.getCategory());
         }
 
-        // Обновляем остальные поля только если они пришли
         if (eventDto.getAnnotation() != null) event.setAnnotation(eventDto.getAnnotation());
         if (eventDto.getDescription() != null) event.setDescription(eventDto.getDescription());
         if (eventDto.getEventDate() != null) {
@@ -211,7 +207,6 @@ public class EventServiceImpl implements EventService {
         if (eventDto.getRequestModeration() != null) event.setRequestModeration(eventDto.getRequestModeration());
         if (eventDto.getTitle() != null) event.setTitle(eventDto.getTitle());
 
-        // Работа с состоянием
         if (eventDto.getStateAction() != null) {
             if (eventDto.getStateAction().equals(EventStateAction.PUBLISH_EVENT)) {
                 if (!event.getState().equals(EventState.PENDING)) {
@@ -236,7 +231,6 @@ public class EventServiceImpl implements EventService {
 
         return EventMapper.toEventFullDto(updEvent, category, userRequestDto);
     }
-
 
 
     @Override
@@ -293,7 +287,6 @@ public class EventServiceImpl implements EventService {
 
         Event event = EventMapper.toEventFromCreatedDto(eventDto, userId, category.getId());
         event = eventRepository.save(event);
-        log.info("🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 {}", event.toString());
         return EventMapper.toEventFullDto(event, category, user);
     }
 
@@ -336,7 +329,6 @@ public class EventServiceImpl implements EventService {
         List<RequestDto> confirmedRequests = new ArrayList<>();
         List<RequestDto> rejectedRequests = new ArrayList<>();
         for (RequestDto request : requests) {
-            log.info("🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂🙂 {}", request.toString());
             if (!request.getStatus().equals(RequestStatus.PENDING)) {
                 throw new DataIntegrityViolationException("Request must have status PENDING");
             }
@@ -346,7 +338,6 @@ public class EventServiceImpl implements EventService {
                 request.setStatus(RequestStatus.CONFIRMED);
                 confirmedRequests.add(request);
             } else {
-                //counter++;
                 requestClient.updateState(userId, request.getId(), RequestStatus.REJECTED);
                 request.setStatus(RequestStatus.REJECTED);
                 rejectedRequests.add(request);
@@ -444,5 +435,4 @@ public class EventServiceImpl implements EventService {
                 ? QEvent.event.confirmedRequests.lt(QEvent.event.participantLimit)
                 : QEvent.event.id.isNotNull();
     }
-
 }

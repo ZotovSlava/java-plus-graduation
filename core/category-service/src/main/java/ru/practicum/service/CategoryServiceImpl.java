@@ -9,7 +9,6 @@ import ru.practicum.dto.category.CategoryCreateDto;
 import ru.practicum.dto.category.CategoryRequestDto;
 import ru.practicum.exception.CategoryNotFoundException;
 import ru.practicum.exception.ConflictException;
-import ru.practicum.feign.event.EventAdminClient;
 import ru.practicum.feign.event.EventClient;
 import ru.practicum.mapper.CategoryMapper;
 import ru.practicum.model.Category;
@@ -21,7 +20,6 @@ import java.util.stream.Collectors;
 @Service
 @AllArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
-
     private final CategoryRepository categoryRepository;
     private final EventClient eventAdminClient;
 
@@ -52,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new CategoryNotFoundException(catId));
 
         if (eventAdminClient.hasEventsWithCategory(catId)) {
-                throw  new ConflictException("The category is not empty");
+            throw new ConflictException("The category is not empty");
         }
 
         categoryRepository.deleteById(catId);

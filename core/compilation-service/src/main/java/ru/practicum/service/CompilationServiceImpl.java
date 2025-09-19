@@ -10,7 +10,6 @@ import ru.practicum.dto.compilation.CompilationRequestDto;
 import ru.practicum.dto.compilation.CompilationUpdateDto;
 import ru.practicum.dto.event.EventFullDto;
 import ru.practicum.exception.CompilationNotFoundException;
-import ru.practicum.feign.event.EventAdminClient;
 import ru.practicum.feign.event.EventClient;
 import ru.practicum.mapper.CompilationMapper;
 import ru.practicum.model.Compilation;

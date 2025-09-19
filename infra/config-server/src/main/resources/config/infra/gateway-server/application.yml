@@ -3,45 +3,36 @@ spring:
     gateway:
       routes:
 
-        # User service (Admin)
         - id: user_admin_route
           uri: lb://user-service
           predicates:
             - Path=/admin/users/**
 
-        # Category service
-        # Admin categories
         - id: category_admin_route
           uri: lb://category-service
           predicates:
             - Path=/admin/categories/**
 
-        # Public categories
         - id: category_public_route
           uri: lb://category-service
           predicates:
             - Path=/categories/**
 
-        # Comment service
-        # Admin comments
         - id: comment_admin_route
           uri: lb://comment-service
           predicates:
             - Path=/admin/comments/**
 
-        # Public comments
         - id: comment_public_route
           uri: lb://comment-service
           predicates:
             - Path=/comments/**
 
-        # Private comments (user-specific)
         - id: comment_private_route
           uri: lb://comment-service
           predicates:
             - Path=/users/*/events/*/comments/**
 
-        # Compilation service
         - id: compilation_admin_route
           uri: lb://compilation-service
           predicates:
@@ -52,7 +43,6 @@ spring:
           predicates:
             - Path=/compilations/**
 
-        # Event service
         - id: event_admin_route
           uri: lb://event-service
           predicates:
@@ -73,7 +63,6 @@ spring:
           predicates:
             - Path=/users/*/events/*/requests/**
 
-        # Request service (user-specific)
         - id: request_user_route
           uri: lb://request-service
           predicates:
