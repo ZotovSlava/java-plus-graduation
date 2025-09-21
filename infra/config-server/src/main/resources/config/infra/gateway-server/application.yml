@@ -1,15 +1,69 @@
-server:
-  port: 8080
-
 spring:
   cloud:
     gateway:
-      discovery:
-        locator:
-          enabled: true
-
       routes:
-        - id: main_service_route
-          uri: lb://main-service
+
+        - id: user_admin_route
+          uri: lb://user-service
           predicates:
-            - Path=/users/**,/admin/**,/events/**,/categories/**,/compilations/**
+            - Path=/admin/users/**
+
+        - id: category_admin_route
+          uri: lb://category-service
+          predicates:
+            - Path=/admin/categories/**
+
+        - id: category_public_route
+          uri: lb://category-service
+          predicates:
+            - Path=/categories/**
+
+        - id: comment_admin_route
+          uri: lb://comment-service
+          predicates:
+            - Path=/admin/comments/**
+
+        - id: comment_public_route
+          uri: lb://comment-service
+          predicates:
+            - Path=/comments/**
+
+        - id: comment_private_route
+          uri: lb://comment-service
+          predicates:
+            - Path=/users/*/events/*/comments/**
+
+        - id: compilation_admin_route
+          uri: lb://compilation-service
+          predicates:
+            - Path=/admin/compilations/**
+
+        - id: compilation_public_route
+          uri: lb://compilation-service
+          predicates:
+            - Path=/compilations/**
+
+        - id: event_admin_route
+          uri: lb://event-service
+          predicates:
+            - Path=/admin/events/**
+
+        - id: event_public_route
+          uri: lb://event-service
+          predicates:
+            - Path=/events/**
+
+        - id: event_private_route
+          uri: lb://event-service
+          predicates:
+            - Path=/users/*/events/**
+
+        - id: event_request_route
+          uri: lb://event-service
+          predicates:
+            - Path=/users/*/events/*/requests/**
+
+        - id: request_user_route
+          uri: lb://request-service
+          predicates:
+            - Path=/users/**

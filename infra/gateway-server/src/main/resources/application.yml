@@ -5,6 +5,10 @@ spring:
     import: "configserver:"
   cloud:
     config:
+      fail-fast: true
+      retry:
+        useRandomPolicy: true
+        max-interval: 6000
       discovery:
         enabled: true
         serviceId: config-server
@@ -18,3 +22,9 @@ eureka:
     hostname: localhost
     instance-id: "${spring.application.name}:${random.value}"
     leaseRenewalIntervalInSeconds: 10
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

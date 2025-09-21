@@ -1,14 +1,106 @@
 services:
-  stats-server:
+  category-db:
+    image: postgres:16.1
+    container_name: category-db
+    environment:
+      POSTGRES_USER: category
+      POSTGRES_PASSWORD: category123
+      POSTGRES_DB: category
     ports:
-      - "9090:9090"
+      - "5433:5432"
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  event-db:
+    image: postgres:16.1
+    container_name: event-db
+    environment:
+      POSTGRES_USER: event
+      POSTGRES_PASSWORD: event123
+      POSTGRES_DB: event
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  user-db:
+    image: postgres:16.1
+    container_name: user-db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: user123
+      POSTGRES_DB: user
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  request-db:
+    image: postgres:16.1
+    container_name: request-db
+    environment:
+      POSTGRES_USER: request
+      POSTGRES_PASSWORD: request123
+      POSTGRES_DB: request
+    ports:
+      - "5436:5432"
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  compilation-db:
+    image: postgres:16.1
+    container_name: compilation-db
+    environment:
+      POSTGRES_USER: compilation
+      POSTGRES_PASSWORD: compilation123
+      POSTGRES_DB: compilation
+    ports:
+      - "5437:5432"
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  comment-db:
+    image: postgres:16.1
+    container_name: comment-db
+    environment:
+      POSTGRES_USER: comment
+      POSTGRES_PASSWORD: comment123
+      POSTGRES_DB: comment
+    ports:
+      - "5438:5432"
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
   stats-db:
     image: postgres:16.1
-
-  ewm-service:
+    container_name: stats-db
+    environment:
+      POSTGRES_USER: stats
+      POSTGRES_PASSWORD: stats123
+      POSTGRES_DB: stats
     ports:
-      - "8080:8080"
+      - "5439:5432"
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
 
-  ewm-db:
-    image: postgres:16.1

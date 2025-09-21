@@ -1,0 +1,35 @@
+package ru.practicum.dto.event;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Data
+@Builder(toBuilder = true)
+@AllArgsConstructor
+@NoArgsConstructor
+public class SimpleEventDto {
+    private Long id;
+    private String annotation;
+    private Long categoryId;
+    private Integer confirmedRequests;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdOn;
+    private Location location;
+    private String description;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime eventDate;
+    private Long initiatorId;
+    private Boolean paid;
+    private Integer participantLimit;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime publishedOn;
+    private Boolean requestModeration;
+    private EventState state;
+    private String title;
+    private Integer views;
+}
