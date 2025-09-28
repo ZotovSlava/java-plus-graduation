@@ -5,7 +5,6 @@ import org.springframework.stereotype.Component;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
 
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Instant;
@@ -73,7 +72,6 @@ public class InMemoryEventSimilarity {
                     addEventSimilarity(first, second, sumMin, time);
                 }
             } else {
-                // существующая пара
                 double diff = Math.min(newWeight, weightsB.getOrDefault(userId, 0.0))
                         - Math.min(oldWeight, weightsB.getOrDefault(userId, 0.0));
 
@@ -82,6 +80,8 @@ public class InMemoryEventSimilarity {
                     if (updatedMinSum > 0) {
                         minWeightsMap.put(second, updatedMinSum);
                         addEventSimilarity(first, second, updatedMinSum, time);
+                    } else {
+                        minWeightsMap.remove(second);
                     }
                 }
             }
@@ -105,5 +105,11 @@ public class InMemoryEventSimilarity {
                     .build();
             eventSimilarityAvroList.add(msg);
         }
+    }
+
+    public void clearState() {
+        userActionWeightInEvent.clear();
+        minWeightsSum.clear();
+        sumUsersActionsWeights.clear();
     }
 }
