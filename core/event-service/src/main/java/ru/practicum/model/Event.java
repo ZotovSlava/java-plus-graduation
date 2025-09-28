@@ -68,8 +68,8 @@ public class Event {
     @Column(name = "title", nullable = false, length = 120)
     private String title;
 
-    @Column(name = "views")
-    private Integer views;
+    @Column(name = "rating")
+    private Double rating;
 
     @PrePersist
     public void prePersist() {
