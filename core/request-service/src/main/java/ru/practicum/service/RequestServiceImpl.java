@@ -3,6 +3,7 @@ package ru.practicum.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.client.CollectorClient;
 import ru.practicum.dto.event.EventState;
 import ru.practicum.dto.event.SimpleEventDto;
 import ru.practicum.dto.request.RequestDto;
@@ -16,7 +17,10 @@ import ru.practicum.mapper.EventUpdateMapper;
 import ru.practicum.mapper.RequestMapper;
 import ru.practicum.model.Request;
 import ru.practicum.storage.RequestRepository;
+import ru.yandex.practicum.grpc.user_action.ActionTypeProto;
+import ru.yandex.practicum.grpc.user_action.UserActionProto;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -30,6 +34,7 @@ public class RequestServiceImpl implements RequestService {
     private final RequestRepository requestRepository;
     private final UserClient userClient;
     private final EventClient eventAdminClient;
+    private final CollectorClient collectorClient;
 
     @Override
     public RequestDto create(Long userId, Long eventId) {
@@ -63,12 +68,34 @@ public class RequestServiceImpl implements RequestService {
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventAdminClient.updateConfirmedRequest(EventUpdateMapper.toEventUpdateAdminDto(event), eventId);
 
+            Instant myInstant = Instant.now();
+            collectorClient.sendUserActionToCollector(UserActionProto.newBuilder()
+                    .setUserId(userId.intValue())
+                    .setEventId(eventId.intValue())
+                    .setType(ActionTypeProto.REGISTER)
+                    .setTimestamp(com.google.protobuf.Timestamp.newBuilder()
+                            .setSeconds(myInstant.getEpochSecond())
+                            .setNanos(myInstant.getNano())
+                            .build())
+                    .build()
+            );
         } else {
             request.setStatus(RequestStatus.PENDING);
         }
 
         if (event.getParticipantLimit() == 0) {
             request.setStatus(RequestStatus.CONFIRMED);
+            Instant myInstant = Instant.now();
+            collectorClient.sendUserActionToCollector(UserActionProto.newBuilder()
+                    .setUserId(userId.intValue())
+                    .setEventId(eventId.intValue())
+                    .setType(ActionTypeProto.REGISTER)
+                    .setTimestamp(com.google.protobuf.Timestamp.newBuilder()
+                            .setSeconds(myInstant.getEpochSecond())
+                            .setNanos(myInstant.getNano())
+                            .build())
+                    .build()
+            );
         }
 
 
