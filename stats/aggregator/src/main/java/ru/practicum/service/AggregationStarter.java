@@ -1,6 +1,5 @@
 package ru.practicum.service;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,54 +15,37 @@ import org.apache.kafka.common.errors.WakeupException;
 import org.springframework.stereotype.Service;
 import ru.practicum.ewm.stats.avro.EventSimilarityAvro;
 import ru.practicum.ewm.stats.avro.UserActionAvro;
-import ru.practicum.kafka.config.KafkaConfiguration;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class AggregationStarter {
 
-    private final KafkaConfiguration configuration;
-    private final InMemoryEventSimilarity memorySensorEvents;
+    private final Consumer<String, SpecificRecordBase> consumer;
+    private final Producer<String, SpecificRecordBase> producer;
+    private final InMemoryEventSimilarity similarityService;
 
     private final Map<TopicPartition, OffsetAndMetadata> currentOffsets = new HashMap<>();
-    private Consumer<String, SpecificRecordBase> consumer;
-    private Producer<String, SpecificRecordBase> producer;
-
-    @PostConstruct
-    public void init() {
-        this.consumer = configuration.kafkaConsumer();
-        this.producer = configuration.kafkaProducer();
-    }
 
     public void start() {
-
         try {
             consumer.subscribe(List.of("stats.user-actions.v1"));
-
             int count = 0;
+
             while (true) {
                 ConsumerRecords<String, SpecificRecordBase> records = consumer.poll(Duration.ofMillis(100));
 
                 for (ConsumerRecord<String, SpecificRecordBase> record : records) {
-                    log.info("Обновление снапшота");
-                    List<EventSimilarityAvro> snapshots = memorySensorEvents.updateState((UserActionAvro) record.value());
+                    List<EventSimilarityAvro> snapshots =
+                            similarityService.calculate((UserActionAvro) record.value());
 
-                    if (!snapshots.isEmpty()) {
-                        snapshots.forEach(snapshot -> {
-                            log.info("Новый снапшот: {}", snapshot);
-                            producer.send(new ProducerRecord<>("stats.events-similarity.v1", snapshot));
-                            log.info("Снапшот отправлен в топик {}", "stats.events-similarity.v1");
-                        });
-                    } else {
-                        log.info("Обновление снапшота не произошло.");
+                    for (EventSimilarityAvro snapshot : snapshots) {
+                        producer.send(new ProducerRecord<>("stats.events-similarity.v1", snapshot));
                     }
 
                     manageOffsets(record, count);
@@ -76,7 +58,7 @@ public class AggregationStarter {
         } catch (WakeupException ignored) {
 
         } catch (Exception e) {
-            log.error("Ошибка во время обработки событий от датчиков", e);
+            log.error("Ошибка обработки сообщений", e);
         } finally {
             try {
                 producer.flush();
@@ -87,7 +69,6 @@ public class AggregationStarter {
         }
     }
 
-
     private void manageOffsets(ConsumerRecord<String, SpecificRecordBase> record, int count) {
         currentOffsets.put(
                 new TopicPartition(record.topic(), record.partition()),
@@ -96,24 +77,20 @@ public class AggregationStarter {
 
         if (count % 10 == 0) {
             consumer.commitAsync(currentOffsets, (offsets, exception) -> {
-                if (exception != null) {
-                    log.warn("Ошибка во время фиксации оффсетов: {}", offsets, exception);
-                }
+                if (exception != null) log.warn("Ошибка фиксации оффсетов: {}", offsets, exception);
             });
         }
     }
 
     @PreDestroy
-    public void close() {
+    private void close() {
         try {
             consumer.close();
-        } catch (Exception e) {
-            log.warn("Ошибка при закрытии consumer", e);
+        } catch (Exception ignored) {
         }
         try {
             producer.close();
-        } catch (Exception e) {
-            log.warn("Ошибка при закрытии producer", e);
+        } catch (Exception ignored) {
         }
     }
 }

@@ -14,102 +14,87 @@ import java.util.*;
 @Component
 public class InMemoryEventSimilarity {
 
-    private final Map<Long, Map<Long, Double>> userActionWeightInEvent = new HashMap<>(); // event -> (user -> weight)
-    private final Map<Long, Map<Long, Double>> minWeightsSum = new HashMap<>(); // eventA -> (eventB -> minWeightsSum)
-    private final Map<Long, Double> sumUsersActionsWeights = new HashMap<>(); // event -> sum(weights)
+    private final Map<Long, Map<Long, Double>> weightMatrix = new HashMap<>();
+    private final Map<Long, Map<Long, Double>> minWeightsSums = new HashMap<>();
+    private final Map<Long, Double> weightSumForEvent = new HashMap<>();
 
-    private final List<EventSimilarityAvro> eventSimilarityAvroList = new ArrayList<>();
+    public List<EventSimilarityAvro> calculate(UserActionAvro userAction) {
+        List<EventSimilarityAvro> result = new ArrayList<>();
 
-    public List<EventSimilarityAvro> updateState(UserActionAvro userActionAvro) {
-        eventSimilarityAvroList.clear();
-
-        Long eventId = userActionAvro.getEventId();
-        Long userId = userActionAvro.getUserId();
-        Instant time = userActionAvro.getTimestamp();
-        Double newWeight = switch (userActionAvro.getType()) {
-            case VIEW -> 0.4;
-            case REGISTER -> 0.8;
+        Long eventId = userAction.getEventId();
+        Long userId = userAction.getUserId();
+        Double rating = switch (userAction.getType()) {
             case LIKE -> 1.0;
+            case REGISTER -> 0.8;
+            case VIEW -> 0.4;
         };
 
-        Map<Long, Double> userWeights = userActionWeightInEvent.computeIfAbsent(eventId, k -> new HashMap<>());
+        Map<Long, Double> userWeights = weightMatrix.computeIfAbsent(eventId, k -> new HashMap<>());
         Double oldWeight = userWeights.getOrDefault(userId, 0.0);
 
-        if (newWeight > oldWeight) {
-            userWeights.put(userId, newWeight);
-            sumUsersActionsWeights.put(eventId, sumUsersActionsWeights.getOrDefault(eventId, 0.0) + (newWeight - oldWeight));
+        if (rating > oldWeight) {
+            userWeights.put(userId, rating);
+            weightMatrix.put(eventId, userWeights);
+            weightSumForEvent.put(eventId, calculateWeightSum(userWeights));
 
-            recalcSimilarity(eventId, userId, newWeight, oldWeight, time);
+            result = recalcSimilarity(eventId, userId);
         }
 
-        return eventSimilarityAvroList;
+        return result;
     }
 
-    private void recalcSimilarity(Long eventA, Long userId, Double newWeight, Double oldWeight, Instant time) {
-        for (Long eventB : userActionWeightInEvent.keySet()) {
-            if (eventA.equals(eventB)) continue;
+    private Double calculateWeightSum(Map<Long, Double> userWeights) {
+        double sum = 0.0;
+        for (Double w : userWeights.values()) sum += w;
+        return Math.sqrt(sum);
+    }
 
-            long first = Math.min(eventA, eventB);
-            long second = Math.max(eventA, eventB);
+    private List<EventSimilarityAvro> recalcSimilarity(Long eventId, Long baseUserId) {
+        List<EventSimilarityAvro> result = new ArrayList<>();
+        Map<Long, Double> baseWeights = weightMatrix.get(eventId);
+        double baseSum = weightSumForEvent.getOrDefault(eventId, 0.0);
 
-            Map<Long, Double> minWeightsMap = minWeightsSum.computeIfAbsent(first, k -> new HashMap<>());
-            Map<Long, Double> weightsA = userActionWeightInEvent.get(eventA);
-            Map<Long, Double> weightsB = userActionWeightInEvent.get(eventB);
+        for (Long curEventId : weightMatrix.keySet()) {
+            if (curEventId.equals(eventId)) continue;
 
-            Double prevMinSum = minWeightsMap.getOrDefault(second, -1.0);
+            Map<Long, Double> curWeights = weightMatrix.get(curEventId);
+            double curSum = weightSumForEvent.getOrDefault(curEventId, 0.0);
 
-            if (prevMinSum < 0) {
-                Set<Long> allUsers = new HashSet<>();
-                allUsers.addAll(weightsA.keySet());
-                allUsers.addAll(weightsB.keySet());
+            if (!curWeights.containsKey(baseUserId)) continue;
 
-                double sumMin = allUsers.stream()
-                        .mapToDouble(uid -> Math.min(weightsA.getOrDefault(uid, 0.0), weightsB.getOrDefault(uid, 0.0)))
-                        .sum();
+            double sumMin = 0.0;
+            Set<Long> allUsers = new HashSet<>();
+            allUsers.addAll(baseWeights.keySet());
+            allUsers.addAll(curWeights.keySet());
 
-                if (sumMin > 0) {
-                    minWeightsMap.put(second, sumMin);
-                    addEventSimilarity(first, second, sumMin, time);
-                }
-            } else {
-                double diff = Math.min(newWeight, weightsB.getOrDefault(userId, 0.0))
-                        - Math.min(oldWeight, weightsB.getOrDefault(userId, 0.0));
+            for (Long uid : allUsers) {
+                sumMin += Math.min(baseWeights.getOrDefault(uid, 0.0),
+                        curWeights.getOrDefault(uid, 0.0));
+            }
 
-                if (diff != 0) {
-                    double updatedMinSum = prevMinSum + diff;
-                    if (updatedMinSum > 0) {
-                        minWeightsMap.put(second, updatedMinSum);
-                        addEventSimilarity(first, second, updatedMinSum, time);
-                    } else {
-                        minWeightsMap.remove(second);
-                    }
-                }
+            if (sumMin > 0) {
+                double similarity = sumMin / (baseSum * curSum);
+                minWeightsSums
+                        .computeIfAbsent(Math.min(eventId, curEventId), k -> new HashMap<>())
+                        .put(Math.max(eventId, curEventId), sumMin);
+
+                EventSimilarityAvro msg = EventSimilarityAvro.newBuilder()
+                        .setEventA(Math.min(eventId, curEventId))
+                        .setEventB(Math.max(eventId, curEventId))
+                        .setSimilarity(BigDecimal.valueOf(similarity).setScale(2, RoundingMode.HALF_UP).doubleValue())
+                        .setTimestamp(Instant.now())
+                        .build();
+
+                result.add(msg);
             }
         }
-    }
 
-    private void addEventSimilarity(Long firstEvent, Long secondEvent, Double sumMinWeights, Instant time) {
-        double sum1 = Math.sqrt(sumUsersActionsWeights.getOrDefault(firstEvent, 0.0));
-        double sum2 = Math.sqrt(sumUsersActionsWeights.getOrDefault(secondEvent, 0.0));
-
-        if (sum1 == 0.0 || sum2 == 0.0) return;
-
-        double similarity = sumMinWeights / (sum1 * sum2);
-
-        if (similarity > 0) {
-            EventSimilarityAvro msg = EventSimilarityAvro.newBuilder()
-                    .setEventA(firstEvent.intValue())
-                    .setEventB(secondEvent.intValue())
-                    .setSimilarity(BigDecimal.valueOf(similarity).setScale(2, RoundingMode.HALF_UP).doubleValue())
-                    .setTimestamp(time)
-                    .build();
-            eventSimilarityAvroList.add(msg);
-        }
+        return result;
     }
 
     public void clearState() {
-        userActionWeightInEvent.clear();
-        minWeightsSum.clear();
-        sumUsersActionsWeights.clear();
+        weightMatrix.clear();
+        minWeightsSums.clear();
+        weightSumForEvent.clear();
     }
 }
