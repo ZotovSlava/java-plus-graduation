@@ -29,7 +29,7 @@ public class EventMapper {
         eventFullDto.setRequestModeration(event.getRequestModeration());
         eventFullDto.setState(event.getState());
         eventFullDto.setTitle(event.getTitle());
-        eventFullDto.setViews(event.getViews());
+        eventFullDto.setRating(event.getRating());
 
         return eventFullDto;
     }
@@ -44,7 +44,7 @@ public class EventMapper {
         eventShortDto.setInitiator(new UserShortDto(userRequestDto.getId(), userRequestDto.getName()));
         eventShortDto.setPaid(event.getPaid());
         eventShortDto.setTitle(event.getTitle());
-        eventShortDto.setViews(event.getViews());
+        eventShortDto.setRating(event.getRating());
 
         return eventShortDto;
     }
@@ -132,7 +132,7 @@ public class EventMapper {
         event.setTitle(eventDto.getTitle());
         event.setConfirmedRequests(0);
         event.setState(EventState.PENDING);
-        event.setViews(eventDto.getViews());
+        event.setRating(event.getRating());
 
         return event;
     }
@@ -154,7 +154,7 @@ public class EventMapper {
         simpleEventDto.setRequestModeration(event.getRequestModeration());
         simpleEventDto.setState(event.getState());
         simpleEventDto.setTitle(event.getTitle());
-        simpleEventDto.setViews(event.getViews());
+        simpleEventDto.setRating(event.getRating());
 
         return simpleEventDto;
     }
